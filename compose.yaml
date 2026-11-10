@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    command: ["postgres", "-p", "55432"]
+    environment:
+      POSTGRES_DB: users_service
+      POSTGRES_USER: advsaasdev
+      POSTGRES_PASSWORD: advsaasdev
+    ports:
+      - "127.0.0.1:55432:55432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/01_users.sql:/docker-entrypoint-initdb.d/01-users.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-p", "55432", "-U", "advsaasdev", "-d", "users_service"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  postgres_data:
